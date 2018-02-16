@@ -10,14 +10,17 @@
 // .durations_(array)
 
 HarmonyState { 
-	var scales, durations, currentScale, quant = 4, routine;
-    *new { arg scalesArray, durationsArray;
-        ^super.new.init(scalesArray, durationsArray);
+	var scales, durations, roots, currentScale, currentRoot, currentDuration, quant = 4, routine;
+    *new { arg scalesArray, rootsArray, durationsArray;
+        ^super.new.init(scalesArray, rootsArray, durationsArray);
     }
-    init { arg scalesArray, durationsArray;
+    init { arg scalesArray, rootsArray, durationsArray;
         scales = scalesArray;
         durations = durationsArray;
+        roots = rootsArray;
         currentScale = scalesArray[0];
+        currentRoot = rootsArray[0];
+        currentDuration = durationsArray[0];
     }
     currentScale {
     	^currentScale;
@@ -27,6 +30,9 @@ HarmonyState {
     }
     scales_ { arg array;
         scales = array;
+    }
+    currentRoot {
+        ^currentRoot;
     }
     durations { 
         ^durations;
@@ -42,7 +48,9 @@ HarmonyState {
     }
     play {
     	routine = Routine {
-    		scales.do({|item, i| currentScale = item; durations[i].yield });
+            loop {
+                scales.do({|item, i| currentScale = item; currentRoot = roots[i]; durations[i].yield });
+            }
     	}.play(quant: quant);
     }
     stop {
